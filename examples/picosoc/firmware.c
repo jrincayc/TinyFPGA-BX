@@ -19,7 +19,19 @@ uint32_t set_irq_mask(uint32_t mask); asm (
     "ret\n"
 );
 
+void sleep(uint32_t len) {
+  uint32_t led_timer = 0;
+  while (led_timer >> len == 0) {
+    led_timer += 1;
+  }
+}
 
+void blink() {
+  reg_leds = 1;
+  sleep(15);
+  reg_leds = 0;
+  sleep(14);
+}
 
 
 void main() {
@@ -34,10 +46,16 @@ void main() {
     reg_spictrl = (reg_spictrl & ~0x007F0000) | 0x00400000;
  
     // blink the user LED
-    uint32_t led_timer = 0;
-       
+    //uint32_t led_timer = 0;
+
+    uint32_t num_blinks = 1;
     while (1) {
-        reg_leds = led_timer >> 16;
-        led_timer = led_timer + 1;
-    } 
+      for(uint32_t i=0; i < num_blinks; i++) {
+	blink();
+      }
+      sleep(17);
+      num_blinks += 1;
+      //reg_leds = led_timer >> 16;
+      //led_timer = led_timer + 1;
+    }
 }
